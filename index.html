@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monografía Interactiva: Manejo de Malezas en Aguacate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .slider-container {
+            display: flex;
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            width: 100vw;
+            height: 100vh;
+            scroll-behavior: smooth;
+        }
+        .slide {
+            flex: 0 0 100vw;
+            width: 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 5rem;
+            position: relative;
+            box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+        }
+        .slide-content {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            width: 100%;
+        }
+        .modal {
+            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.7);
+        }
+        .modal-content {
+            background-color: #fefefe; margin: 5% auto; padding: 2rem; border: none;
+            width: 90%; max-width: 1100px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .close {
+            color: #555; float: right; font-size: 32px; font-weight: bold; cursor: pointer; transition: color 0.3s;
+        }
+        .close:hover { color: #000; }
+        .image-frame {
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            overflow: hidden;
+            background-color: white;
+            padding: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-frame img {
+             width: 100%;
+             height: auto;
+             max-height: 100%;
+             object-fit: contain;
+             border-radius: 0.5rem;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 1.5s ease-in-out; }
+        .fade-in-up { animation: fadeInUp 1s ease-out forwards; }
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #111827; z-index: 200; display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 1.5rem; transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="preloader" class="preloader">Cargando Presentación...</div>
+
+    <div class="slider-container" id="slider" style="opacity: 0; transition: opacity 1s ease;">
+        <!-- Diapositiva de Bienvenida -->
+        <section id="inicio" class="slide bg-green-800 text-white text-center">
+            <div class="fade-in">
+                <img src="https://placehold.co/150x150/ffffff/10b981?text=Logo+U" alt="Logo Universidad" class="mx-auto mb-6 h-24 w-24 rounded-full">
+                <h1 class="text-6xl font-black mb-3">Monografía Interactiva</h1>
+                <h2 class="text-4xl font-light mb-5">Manejo Integrado de Malezas en Aguacate 'Lorena'</h2>
+                <p class="text-2xl">Estudio de caso: Finca "Rancho Humilde", Rozo, Valle del Cauca</p>
+                <p class="mt-4 text-xl">Por: Gaviria C., Gonzalez O., Guerrero J., Rojas J.</p>
+                <a id="download-btn" href="#" class="mt-8 inline-block bg-white text-gray-800 font-bold py-2 px-6 rounded-lg hover:bg-gray-200 transition-colors text-lg">Descargar HTML</a>
+            </div>
+        </section>
+
+        <!-- Diapositiva Resumen -->
+        <section id="resumen" class="slide bg-gray-100">
+            <div class="slide-content fade-in-up">
+                <h3 class="text-4xl font-bold mb-8 text-gray-800">Resumen del Estudio</h3>
+                <p class="text-xl leading-relaxed text-gray-700">
+                    Este trabajo presenta una propuesta de Manejo Integrado de Malezas (MIM) para el cultivo de aguacate variedad Lorena. Se realizó una evaluación completa que incluyó un banco de semillas, análisis de suelo y agua, y una revisión de las prácticas actuales. Con base en esto, se propone un plan que combina estrategias culturales, mecánicas, químicas y biológicas, alineado con las Buenas Prácticas Agrícolas (BPA), para un control sostenible y rentable.
+                </p>
+            </div>
+        </section>
+        
+        <!-- Diapositiva Título Finca -->
+        <section id="finca-intro" class="slide bg-green-700 text-white text-center">
+             <div class="fade-in">
+                <h2 class="text-6xl font-black">Análisis de la Finca</h2>
+                <p class="text-3xl mt-2 font-light">"Rancho Humilde"</p>
+            </div>
+        </section>
+        
+        <!-- Diapositivas de La Finca -->
+        <section id="finca-ubicacion" class="slide bg-gray-100">
+            <div class="slide-content fade-in-up grid grid-cols-2 gap-8 items-center">
+                <div class="image-frame h-[500px]">
+                    <img src="https://i.postimg.cc/ZBCGHy3H/mapapredio.png" alt="Imagen de mapa del predio">
+                </div>
+                <div class="text-left">
+                    <h3 class="text-5xl font-bold mb-4 text-green-700">Ubicación y Cultivo</h3>
+                    <p class="text-2xl"><strong>Lugar:</strong> Rozo, Valle del Cauca</p>
+                    <p class="text-2xl"><strong>Altitud:</strong> 964 msnm</p>
+                    <p class="text-2xl"><strong>Cultivo:</strong> Aguacate 'Lorena' de 10 años</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="finca-manejo" class="slide bg-gray-100">
+             <div class="slide-content fade-in-up grid grid-cols-2 gap-8 items-center">
+                <div class="text-left">
+                    <h3 class="text-5xl font-bold mb-4 text-green-700">Manejo Cultural</h3>
+                    <p class="text-2xl">Uso de cobertura de zapallo (<em>Cucurbita spp.</em>) como estrategia clave para la supresión de malezas, reduciendo la dependencia de herbicidas y mejorando la salud del suelo.</p>
+                </div>
+                 <div class="image-frame h-[500px]">
+                    <img src="https://i.postimg.cc/yJQq0TJW/zapallo.jpg" alt="Imagen de cobertura de zapallo">
+                </div>
+            </div>
+        </section>
+
+        <!-- Diapositiva Título Malezas -->
+        <section id="malezas-intro" class="slide bg-yellow-800 text-white text-center">
+             <div class="fade-in">
+                <h2 class="text-6xl font-black">Identificación de Malezas</h2>
+                <p class="text-3xl mt-2 font-light">Conociendo al Competidor</p>
+            </div>
+        </section>
+        
+        <!-- Diapositivas de Malezas -->
+        <section id="malezas-banco" class="slide bg-gray-100">
+             <div class="slide-content fade-in-up">
+                <h3 class="text-4xl font-bold mb-6 text-center">Proceso del Banco de Semillas</h3>
+                 <div class="grid grid-cols-3 gap-6">
+                    <figure class="text-center">
+                        <div class="image-frame h-56 w-full"><img src="https://i.postimg.cc/cgFQxr5p/dehierve.png" alt="Imagen de deshierbe"></div>
+                        <figcaption class="text-md mt-3 font-semibold">1. Muestreo de Suelo</figcaption>
+                    </figure>
+                    <figure class="text-center">
+                        <div class="image-frame h-56 w-full"><img src="https://i.postimg.cc/xkyvZsGT/bancodemalesasgermiando2.png" alt="Imagen de banco de semillas germinando"></div>
+                        <figcaption class="text-md mt-3 font-semibold">2. Germinación Controlada</figcaption>
+                    </figure>
+                    <figure class="text-center">
+                        <div class="image-frame h-56 w-full"><img src="https://i.postimg.cc/jDfQHqLf/bancodesemillssgreminado.png" alt="Imagen de banco de semillas desarrollado"></div>
+                        <figcaption class="text-md mt-3 font-semibold">3. Identificación de Especies</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <section id="malezas-resultados" class="slide bg-gray-100">
+            <div class="slide-content fade-in-up grid grid-cols-2 gap-8 items-center">
+                 <div class="text-left">
+                    <h3 class="text-5xl font-bold mb-4 text-yellow-800">Resultados del Muestreo</h3>
+                    <p class="text-3xl">Se encontró una alta predominancia de <strong>Gramíneas</strong>, representando el principal desafío de manejo en el lote.</p>
+                    <button id="open-modal-btn" class="mt-8 bg-yellow-800 text-white font-bold py-3 px-8 rounded-lg hover:bg-yellow-900 transition-colors text-lg">Ver Catálogo Detallado</button>
+                </div>
+                <div class="image-frame h-[500px]">
+                    <img src="https://i.postimg.cc/62WrxdzV/distribuciondemalezas.png" alt="Gráfico de distribución de malezas">
+                </div>
+            </div>
+        </section>
+
+        <!-- Diapositiva Título MIM -->
+        <section id="mim-intro" class="slide bg-blue-900 text-white text-center">
+             <div class="fade-in">
+                <h2 class="text-6xl font-black">Plan de Manejo Integrado</h2>
+                <p class="text-3xl mt-2 font-light">(MIM)</p>
+            </div>
+        </section>
+
+        <!-- Diapositivas Plan MIM -->
+        <section id="mim-cultural" class="slide bg-green-100">
+            <div class="grid grid-cols-2 gap-12 items-center max-w-6xl">
+                <div class="fade-in-up">
+                    <h4 class="text-2xl font-bold text-green-800">NIVEL 1</h4>
+                    <h3 class="text-5xl font-black mb-4">Manejo Cultural y Preventivo</h3>
+                    <p class="text-xl">La base del sistema. Se busca crear una ventaja competitiva para el cultivo, suprimiendo la germinación de arvenses y mejorando la salud del suelo.</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4 text-lg">
+                        <li>Establecimiento de coberturas nobles (ej. <em>Arachis pintoi</em>).</li>
+                        <li>Aplicación de acolchado (<em>mulch</em>) orgánico en la zona de goteo.</li>
+                    </ul>
+                </div>
+                <div class="image-frame h-96 w-full fade-in"><img src="https://i.postimg.cc/yJQq0TJW/zapallo.jpg" alt="Imagen de cobertura de zapallo"></div>
+            </div>
+        </section>
+
+        <section id="mim-mecanico" class="slide bg-yellow-100">
+            <div class="grid grid-cols-2 gap-12 items-center max-w-6xl">
+                <div class="image-frame h-96 w-full fade-in"><img src="https://i.postimg.cc/R3V53YZj/Fumigadormanual.png" alt="Imagen de fumigador manual" style="object-fit: contain;"></div>
+                <div class="fade-in-up">
+                    <h4 class="text-2xl font-bold text-yellow-800">NIVEL 2</h4>
+                    <h3 class="text-5xl font-black mb-4">Manejo Mecánico y Físico</h3>
+                    <p class="text-xl">Intervenciones físicas directas para controlar arvenses que escapan al control cultural. Es una herramienta táctica, especialmente crítica en las fases iniciales del cultivo.</p>
+                     <ul class="list-disc list-inside space-y-2 mt-4 text-lg">
+                        <li>Control con guadaña en las calles del cultivo.</li>
+                        <li>Plateo manual o mecánico superficial para no dañar raíces.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="mim-quimico" class="slide bg-red-100">
+             <div class="grid grid-cols-2 gap-12 items-center max-w-6xl">
+                <div class="fade-in-up">
+                    <h4 class="text-2xl font-bold text-red-800">NIVEL 3</h4>
+                    <h3 class="text-5xl font-black mb-4">Manejo Químico</h3>
+                    <p class="text-xl">Se contempla como la última herramienta dentro del MIM. Su uso debe ser racional, dirigido y siempre en rotación para prevenir la selección de biotipos resistentes.</p>
+                     <ul class="list-disc list-inside space-y-2 mt-4 text-lg">
+                        <li>Basado en monitoreo y Nivel de Daño Económico (NDE).</li>
+                        <li>Rotación de ingredientes activos (Grupos HRAC).</li>
+                        <li>Uso obligatorio de Equipo de Protección Personal (EPP).</li>
+                    </ul>
+                </div>
+                <div class="image-frame fade-in"><img src="https://i.postimg.cc/y39pkh4J/Plantafreteagrup-HRAC.png" alt="Infografía de grupos HRAC"></div>
+            </div>
+        </section>
+        
+        <section id="mim-biologico" class="slide bg-blue-100">
+            <div class="grid grid-cols-2 gap-12 items-center max-w-6xl">
+                <div class="image-frame h-96 w-full fade-in"><img src="https://i.postimg.cc/9RsNm8S5/BATATILLA.jpg" alt="Imagen de batatilla"></div>
+                <div class="fade-in-up">
+                    <h4 class="text-2xl font-bold text-blue-800">NIVEL 4</h4>
+                    <h3 class="text-5xl font-black mb-4">Manejo Biológico</h3>
+                    <p class="text-xl">La frontera del control sostenible. Utiliza organismos vivos o sus derivados para suprimir poblaciones de malezas sin afectar el agroecosistema.</p>
+                     <ul class="list-disc list-inside space-y-2 mt-4 text-lg">
+                        <li>Uso de hongos micoherbicidas específicos.</li>
+                        <li>Aplicación de extractos vegetales con propiedades alelopáticas.</li>
+                        <li>Fomento de insectos que se alimentan de semillas de malezas.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diapositiva Conclusiones -->
+        <section id="conclusiones" class="slide bg-gray-200">
+            <div class="slide-content max-w-5xl w-full fade-in-up">
+                <h3 class="text-4xl font-bold mb-8">Conclusiones y Recomendaciones</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-2xl font-bold mb-3 text-green-700">Conclusiones Clave</h4>
+                        <ul class="list-disc list-inside space-y-3 text-lg">
+                            <li>Alta presión de gramíneas en el lote.</li>
+                            <li>Las coberturas nobles son una estrategia preventiva fundamental.</li>
+                            <li>El control mecánico debe ser superficial para proteger las raíces.</li>
+                            <li>El control químico debe ser la última opción, con rotación de activos.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold mb-3 text-green-700">Recomendaciones</h4>
+                        <ul class="list-disc list-inside space-y-3 text-lg">
+                            <li>Implementar coberturas nobles (ej. maní forrajero).</li>
+                            <li>Utilizar <em>mulch</em> orgánico en el plato de los árboles.</li>
+                            <li>Realizar plateo manual frecuente y superficial.</li>
+                            <li>Basar aplicaciones químicas en el Nivel de Daño Económico (NDE).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Controles de Navegación -->
+    <div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex space-x-4">
+        <button id="nav-left" class="bg-white/50 backdrop-blur-sm text-gray-800 w-14 h-14 rounded-full flex items-center justify-center shadow-lg nav-button">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <button id="nav-right" class="bg-white/50 backdrop-blur-sm text-gray-800 w-14 h-14 rounded-full flex items-center justify-center shadow-lg nav-button">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+    </div>
+
+    <div id="weedModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 class="text-3xl font-bold mb-6">Catálogo Completo de Malezas</h3>
+            <div id="modal-body" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-h-[70vh] overflow-y-auto p-4"></div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.getElementById('preloader');
+            const slider = document.getElementById('slider');
+            
+            window.addEventListener('load', () => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    slider.style.opacity = '1';
+                }, 500);
+            });
+
+            const weeds = [
+                { name: "Malva", species: "Malvastrum spinosum", type: "Hoja Ancha", hrac_res: "No reportada", hrac_sus: "4 (Hormonales: 2,4-D, Picloram)" },
+                { name: "Pasto Rhodes", species: "Chloris spp.", type: "Gramínea", hrac_res: "Resistencia a 9 (Glifosato) reportada", hrac_sus: "1 (ACCasa: FOPs, DIMs), 9 (Glifosato)", image: "https://i.postimg.cc/fJng1PmY/grMINEAS.jpg" },
+                { name: "Cortadera", species: "Cyperus spp.", type: "Ciperácea", hrac_res: "Alta tolerancia a 9 (Glifosato)", hrac_sus: "2 (ALS: Halosulfuron), 10 (Glufosinato)", image: "https://i.postimg.cc/RqnDsm6M/CIPERACEAS.jpg" },
+                { name: "Cadillo", species: "Achyranthes spp.", type: "Hoja Ancha", hrac_res: "No reportada", hrac_sus: "4 (Hormonales), 14 (Paraquat)" },
+                { name: "Pega-pega", species: "Priva spp.", type: "Hoja Ancha", hrac_res: "No reportada", hrac_sus: "4 (Hormonales: 2,4-D), 9 (Glifosato)" },
+                { name: "Limoncillo", species: "Cymbopogon spp.", type: "Gramínea", hrac_res: "No reportada", hrac_sus: "1 (ACCasa), 9 (Glifosato)", image: "https://i.postimg.cc/fJng1PmY/grMINEAS.jpg" },
+                { name: "Coquito", species: "Cyperus rotundus", type: "Ciperácea", hrac_res: "Alta tolerancia natural a 9 (Glifosato)", hrac_sus: "2 (ALS: Halosulfuron), 10 (Glufosinato)", image: "https://i.postimg.cc/RqnDsm6M/CIPERACEAS.jpg" },
+                { name: "Ortiga", species: "Urtica dioica", type: "Hoja Ancha", hrac_res: "No reportada", hrac_sus: "9 (Glifosato), 4 (Hormonales)" },
+                { name: "Liendre puerco", species: "Echinochloa colona", type: "Gramínea", hrac_res: "2 (ALS) y 1 (ACCasa)", hrac_sus: "10 (Glufosinato), 9 (Glifosato)", image: "https://i.postimg.cc/fJng1PmY/grMINEAS.jpg" },
+                { name: "Lechero", species: "Euphorbiaceae spp.", type: "Hoja Ancha", hrac_res: "Tolerancia a 9 (Glifosato) en algunas especies", hrac_sus: "4 (Hormonales), 5 (FSII: Atrazina)" },
+                { name: "Pata de gallina", species: "Eleusine indica", type: "Gramínea", hrac_res: "9 (Glifosato)", hrac_sus: "1 (ACCasa), 10 (Glufosinato)", image: "https://i.postimg.cc/fJng1PmY/grMINEAS.jpg" },
+                { name: "Cadillo (Setaria)", species: "Setaria parviflora", type: "Gramínea", hrac_res: "No reportada", hrac_sus: "1 (ACCasa), 9 (Glifosato)" },
+                { name: "Índigo", species: "Indigofera tinctoria", type: "Hoja Ancha", hrac_res: "Tolerancia por ser planta leñosa", hrac_sus: "4 (Hormonales: Mezcla 2,4-D + Picloram)" },
+                { name: "Batatilla", species: "Ipomoea spp.", type: "Hoja Ancha", hrac_res: "Alta tolerancia a 9 (Glifosato)", hrac_sus: "4 (Hormonales: 2,4-D, Dicamba)", image: "https://i.postimg.cc/9RsNm8S5/BATATILLA.jpg" },
+                { name: "Estrella de belén", species: "Hippobroma longiflora", type: "Hoja Ancha", hrac_res: "No reportada", hrac_sus: "9 (Glifosato), 14 (Paraquat)" },
+                { name: "Papunga", species: "Bidens pilosa", type: "Hoja Ancha", hrac_res: "2 (ALS)", hrac_sus: "5 (FSII: Atrazina), 14 (Paraquat)" },
+                { name: "Escoba", species: "Sida spp.", type: "Hoja Ancha", hrac_res: "Alta tolerancia a 9 (Glifosato)", hrac_sus: "4 (Hormonales: Mezcla 2,4-D + Picloram)" },
+                { name: "Cola de caballo", species: "Chloris virgata", type: "Gramínea", hrac_res: "Resistencia a 9 (Glifosato) reportada", hrac_sus: "1 (ACCasa: FOPs, DIMs)", image: "https://i.postimg.cc/fJng1PmY/grMINEAS.jpg" },
+                { name: "Rabo de alacrán", species: "Heliotropium angiospermum", type: "Hoja Ancha", hrac_res: "No reportada", hrac_sus: "4 (Hormonales), 14 (Paraquat)" }
+            ];
+            
+            const modalBody = document.getElementById('modal-body');
+            weeds.forEach(weed => {
+                const card = document.createElement('div');
+                const imageUrl = weed.image ? weed.image : `https://placehold.co/150x100/e5e7eb/374151?text=N/A`;
+                card.className = 'bg-gray-100 p-3 rounded-lg shadow text-center flex flex-col items-center justify-center transition-transform hover:scale-105';
+                card.innerHTML = `<div class="image-frame w-full h-20 mb-2"><img src="${imageUrl}" alt="[Imagen de ${weed.name}]" onerror="this.onerror=null;this.src='https://placehold.co/150x100/e5e7eb/374151?text=N/A';"></div><h5 class="font-semibold text-sm leading-tight">${weed.name}</h5><p class="text-xs text-gray-500">${weed.type}</p>`;
+                modalBody.appendChild(card);
+            });
+
+            const modal = document.getElementById('weedModal');
+            const openModalBtn = document.getElementById('open-modal-btn');
+            const span = document.getElementsByClassName("close")[0];
+            openModalBtn.onclick = () => { modal.style.display = "block"; }
+            span.onclick = () => { modal.style.display = "none"; }
+            window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; }
+
+            const navLeft = document.getElementById('nav-left');
+            const navRight = document.getElementById('nav-right');
+            const sections = Array.from(document.querySelectorAll('.slider-container > section[id]'));
+            let currentSectionIndex = 0;
+
+            function updateNavButtons() {
+                navLeft.disabled = currentSectionIndex === 0;
+                navRight.disabled = currentSectionIndex === sections.length - 1;
+                navLeft.classList.toggle('opacity-50', navLeft.disabled);
+                navLeft.classList.toggle('cursor-not-allowed', navLeft.disabled);
+                navRight.classList.toggle('opacity-50', navRight.disabled);
+                navRight.classList.toggle('cursor-not-allowed', navRight.disabled);
+            }
+
+            function scrollToSection(index) {
+                slider.scrollTo({
+                    left: index * slider.offsetWidth,
+                    behavior: 'smooth'
+                });
+            }
+
+            navLeft.addEventListener('click', () => {
+                if (currentSectionIndex > 0) {
+                    currentSectionIndex--;
+                    scrollToSection(currentSectionIndex);
+                }
+            });
+
+            navRight.addEventListener('click', () => {
+                if (currentSectionIndex < sections.length - 1) {
+                    currentSectionIndex++;
+                    scrollToSection(currentSectionIndex);
+                }
+            });
+            
+            let scrollTimeout;
+            slider.addEventListener('scroll', () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    const newIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
+                    if (newIndex !== currentSectionIndex) {
+                        currentSectionIndex = newIndex;
+                        updateNavButtons();
+                    }
+                }, 100);
+            });
+
+            const downloadBtn = document.getElementById('download-btn');
+            downloadBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const htmlContent = document.documentElement.outerHTML;
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'presentacion_monografia_aguacate.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
+            updateNavButtons();
+        });
+    </script>
+</body>
+</html>
